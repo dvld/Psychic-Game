@@ -1,48 +1,77 @@
-// array to list possible guesses
-var possibilities = [
+// array of possibilites
+var letters = [
     "a", "b", "c", "d", "e",
     "f", "g", "h", "i", "j", 
     "k", "l", "m", "n", "o", 
     "p", "q", "r", "s", "t", 
-    "U", "v", "w", "x", "y", "z"
+    "u", "v", "w", "x", "y", 
+    "z"
 ];
 
 // win-loss count
-var win = 0;
-var loss = 0;
-var guessesLeft = 7;
+var wins = 0;
+var losses = 0;
+var guessesLeft = 9;
 
-// referece variables
-var directions = document.getElementById("directions-text");
-var userChoice = document.getElementById("userChoice-text");
-var computerChoice = document.getElementById("computerChoice-text");
-var wins = document.getElementById("wins-text");
-var losses = document.getElementById("losses-text");
-// key press function
-document.onkeyup = function(event) {
+// what has been guessed
+var guesses = [];
 
-    // determines key pressed
-    var userGuess = event.key;
+// computer's guess
+var answer = null;
 
-    // randomly chooses computer's letter
-    var computerGuess = possibilities[Math.floor(Math.random() * possibilities.length)];
+// update funnctions
+var updateGuessesLeft = function() {
+    document.querySelector("#guessesLeft").innerHTML = guessesLeft;
+};
 
-    // logic
-    if (userGuess === computerGuess) {
-        win++;
-    }   else if (userGuess !== computerGuess) {
-        guessesLeft--;
+var updateAnswer = function() {
+    answer = letters[Math.floor(Math.random() * letters.length)];
+};
+
+var updateGuesses = function() {
+    document.querySelector("#guesses").innerHTML = guesses.join(", ");
+};
+
+// reset function
+var reset = function() {
+    guessesLeft = 9;
+    guesses = [];
+    updateAnswer();
+    updateGuessesLeft();
+    updateGuesses();
+}
+
+// on page load
+updateAnswer();
+updateGuessesLeft();
+
+// key capture functions
+document.onkeydown = function(event) {
+    // reduce guesses
+    guessesLeft--;
+    // lowercase
+    var letter = String.fromCharCode(event.which).toLowerCase();
+    // list guesses
+    guesses.push(letter);
+    // update
+    updateGuessesLeft();
+    updateGuesses();
+
+    // check for match
+    if (letter === answer) {
+        // on match
+        wins++;
+        document.querySelector("#wins").innerHTML = wins;
+        // then reset
+        reset();
     }
 
+    // out of guesses
     if (guessesLeft === 0) {
-        loss++;
-    }   
-
-    // Hide the directions
-    directionsText.textContent = "";
-
-    // Display
-    userChoice.textContent = "Your Guesses" + userGuess;
-    wins.textContent = "wins: " + wins;
-    losses.textContent = "losses: " + losses;
+        // on loss
+        losses++;
+        document.querySelector("#losses").innerHTML = losses;
+        // then reset
+        reset();
+    }
 };
